@@ -35,41 +35,30 @@ public class Customer {
     }
 
     public String getStatement() {
-        String statement = null;
-        statement = "Statement for " + name + "\n";
+        StringBuffer statement = new StringBuffer();
+        statement.append(String.format("Statement for %s \n", name));
+    	
         double total = 0.0;
         for (Account a : accounts) {
-            statement += "\n" + statementForAccount(a) + "\n";
-            total += a.sumTransactions();
+            statement.append("\n").append(statementForAccount(a)).append("\n");
+        	total += a.sumTransactions();
         }
-        statement += "\nTotal In All Accounts " + toDollars(total);
-        return statement;
+        statement.append("\nTotal In All Accounts ").append(toDollars(total));
+        
+        return statement.toString();
     }
 
     private String statementForAccount(Account a) {
-        String s = "";
-
-       //Translate to pretty account type
-        switch(a.getAccountType()){
-            case Account.CHECKING:
-                s += "Checking Account\n";
-                break;
-            case Account.SAVINGS:
-                s += "Savings Account\n";
-                break;
-            case Account.MAXI_SAVINGS:
-                s += "Maxi Savings Account\n";
-                break;
-        }
-
+       StringBuffer statementOutput = new StringBuffer();
+       statementOutput.append(a.getAccountType().getTypeOfAccount()).append(" Account\n");
         //Now total up all the transactions
         double total = 0.0;
-        for (Transaction t : a.transactions) {
-            s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-            total += t.amount;
+        for (Transaction t : a.getTransactions()) {
+        	statementOutput.append(String.format("   %s %s\n", t.getAmount() < 0 ? "withdrawal" : "deposit", toDollars(t.getAmount())));
+            total += t.getAmount();
         }
-        s += "Total " + toDollars(total);
-        return s;
+        statementOutput.append(String.format("  Total %s", toDollars(total)));
+        return statementOutput.toString();
     }
 
     private String toDollars(double d){
